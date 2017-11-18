@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margin_h">16dp</dimen>
+    <dimen name="margin_v">16dp</dimen>
+    <dimen name="card_margin">5dp</dimen>
+    <dimen name="card_corner_radius">4dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+</resources>
