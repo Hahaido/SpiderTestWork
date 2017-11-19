@@ -25,6 +25,8 @@ public class ImageInfoFragment extends Fragment {
     private OkHttpClient httpClient;
     private ImgurImage mImage;
     protected boolean mIsLoading = false;
+    private int mPreviousTotal = 0;
+    private int mVisibleThreshold = 5;
 
     private static final String EXTRA_IMAGE = "IMAGE";
     private static final String clientID = "6b43ed616be596a";
@@ -66,6 +68,10 @@ public class ImageInfoFragment extends Fragment {
 
         mImageView = (ImageView) parent.findViewById(R.id.card_image);
 
+        if (savedInstanceState != null) {
+            mImage = savedInstanceState.getParcelable(EXTRA_IMAGE);
+        }
+
         String imageId = "";
         if (mImage.isAlbum) {
             imageId = mImage.cover;
@@ -84,9 +90,13 @@ public class ImageInfoFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if (savedInstanceState == null) {
-            setAdapter();
-        }
+        setAdapter();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(EXTRA_IMAGE, mImage);
+        super.onSaveInstanceState(outState);
     }
 
     private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
@@ -99,9 +109,16 @@ public class ImageInfoFragment extends Fragment {
 
         int visibleItemCount = layoutMgr.getChildCount();
         int totalItemCount = layoutMgr.getItemCount();
-        int firstVisibleItemPosition = layoutMgr.findFirstVisibleItemPosition();
+        int firstVisibleItem = layoutMgr.findFirstVisibleItemPosition();
 
-        if (totalItemCount > 0 && firstVisibleItemPosition + visibleItemCount >= totalItemCount && !mIsLoading) {
+        if (mIsLoading) {
+            if (totalItemCount > mPreviousTotal) {
+                mIsLoading = false;
+                mPreviousTotal = totalItemCount;
+            }
+        }
+
+        if (!mIsLoading && (totalItemCount - visibleItemCount) <= (firstVisibleItem + mVisibleThreshold))  {
             mIsLoading = true;
             mAdapter.fetchNextPage();
         }

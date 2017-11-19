@@ -20,9 +20,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.main_activity);
-        mImageListFragment = new ImageListFragment();
 
-        changeFragment(0, null);
+        if (savedInstanceState == null) {
+            mImageListFragment = new ImageListFragment();
+            changeFragment(0, null);
+        } else {
+            mImageListFragment = (ImageListFragment) getSupportFragmentManager().findFragmentByTag(IMAGE_LIST_TAG);
+        }
     }
 
     public void changeFragment(int frNumber, ImgurImage image) {
